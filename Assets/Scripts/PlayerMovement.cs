@@ -46,6 +46,17 @@ public class PlayerMovement : MonoBehaviour
         float moveDirectionY = playerVelocity.y;
         playerVelocity = (forward * curSpeedX) + (right * curSpeedY);
 
+        //Crouch
+        bool isCrouching = Input.GetKey(KeyCode.C);
+        if (isCrouching && isRunning == false) 
+        {
+            transform.localScale = new Vector3(1, 0.6f, 1);    
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+
         //for jump
         if(Input.GetButton("Jump") && canMove && controller.isGrounded)
         {

@@ -1028,7 +1028,7 @@ MonoBehaviour:
   playerCamera: {fileID: 880415442}
   playerSpeed: 6
   jumpHeight: 6
-  runSpeed: 10
+  runSpeed: 15
   lookSpeed: 4
 --- !u!143 &2132176196
 CharacterController:
