@@ -17,23 +17,31 @@ public class PlayerMovement : MonoBehaviour
     private bool groundedPlayer; 
     private float gravityValue = -9.81f;
     private bool canMove = true;
+    private Rigidbody rb;
 
     [SerializeField] private float lookSpeed = 4f;
     private float lookXlimit = 90f;
     private float rotation = 0;
 
+    private bool isSliding;
+    [SerializeField] private float slideTime;
+    [SerializeField] private float maxSlideLength;
+    [SerializeField] private float slideForce;
+
     
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         controller = GetComponent<CharacterController>();
         DisableCursor();
     }
-
+  
     void Update()
     {
         Movement();    
     }
+    
     private void Movement()
     {
         
@@ -50,13 +58,21 @@ public class PlayerMovement : MonoBehaviour
         
         //Crouch
         bool isCrouching = Input.GetKey(KeyCode.C);
-        if (isCrouching && isRunning == false) 
+        if (isCrouching && !isRunning) 
         {
-           transform.localScale = new Vector3(1, 0.6f, 1);
+            isSliding = false;
+            transform.localScale = new Vector3(1, 0.6f, 1);
+        }
+        else if(isCrouching && isRunning)
+        {
+            StartSliding();
+            if(isSliding)
+            SlidingMovement();
         }
         else
         {
             transform.localScale = new Vector3(1, 1, 1);
+            isSliding = false;
         }
         
         //for jump
@@ -82,6 +98,31 @@ public class PlayerMovement : MonoBehaviour
             playerCamera.transform.localRotation = Quaternion.Euler(rotation, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
         }  
+    }
+
+    private void StartSliding()
+    {
+        isSliding = true;
+        transform.localScale = new Vector3(1, 0.2f, 1);
+    }
+
+    private void SlidingMovement()
+    {
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
+        playerVelocity =  (forward * slideForce);
+        slideTime -= Time.deltaTime;
+
+        if (slideTime < 0)
+        {
+            StopSliding();
+        }
+    }
+
+    private void StopSliding()
+    {
+        isSliding = false;
+        transform.localScale = new Vector3(1, 1, 1);
     }
 
     private static void DisableCursor()
