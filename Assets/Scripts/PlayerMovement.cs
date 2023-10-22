@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Animations;
 [RequireComponent(typeof(CharacterController))]
@@ -24,8 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private float rotation = 0;
 
     private bool isSliding;
-    [SerializeField] private float slideTime;
-    [SerializeField] private float maxSlideLength;
+    [SerializeField] private float slideTime = 1f;
+    private float maxSlideTime = 1f;
     [SerializeField] private float slideForce;
 
     
@@ -39,9 +40,9 @@ public class PlayerMovement : MonoBehaviour
   
     void Update()
     {
-        Movement();    
+        Movement();
     }
-    
+
     private void Movement()
     {
         
@@ -58,21 +59,22 @@ public class PlayerMovement : MonoBehaviour
         
         //Crouch
         bool isCrouching = Input.GetKey(KeyCode.C);
+        bool cancelCrouch = Input.GetKeyUp(KeyCode.C);
         if (isCrouching && !isRunning) 
         {
-            isSliding = false;
             transform.localScale = new Vector3(1, 0.6f, 1);
         }
         else if(isCrouching && isRunning)
         {
             StartSliding();
-            if(isSliding)
-            SlidingMovement();
+            if (isSliding)
+                SlidingMovement();
         }
+        
         else
         {
+            Reset();
             transform.localScale = new Vector3(1, 1, 1);
-            isSliding = false;
         }
         
         //for jump
@@ -100,6 +102,10 @@ public class PlayerMovement : MonoBehaviour
         }  
     }
 
+    private void Reset()
+    {
+        slideTime = maxSlideTime;
+    }
     private void StartSliding()
     {
         isSliding = true;
