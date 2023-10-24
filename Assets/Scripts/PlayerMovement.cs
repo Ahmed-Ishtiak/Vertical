@@ -14,21 +14,28 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float runSpeed = 8f;
     private CharacterController controller;
+    //For moving
     private Vector3 playerVelocity = Vector3.zero;
     private bool groundedPlayer; 
     private float gravityValue = -9.81f;
     private bool canMove = true;
  
-
+    //For Rotation
     [SerializeField] private float lookSpeed = 4f;
     private float lookXlimit = 90f;
     private float rotation = 0;
 
+    //For Sliding
     private bool isSliding;
     [SerializeField] private float slideTime = 1f;
     private float maxSlideTime = 1f;
     [SerializeField] private float slideForce;
 
+    //For Slope
+    private bool slopeSlide = true;
+    private float slopeSpeed = 12f;
+    private Vector3 slopePoint;
+    private bool isSlopeSliding; 
     
 
     void Start()
@@ -48,21 +55,26 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        //for running
+        //Run
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
         float curSpeedX = canMove ? (isRunning ? runSpeed : playerSpeed) * Input.GetAxis("Vertical") : 0;
         float curSpeedY = canMove ? (isRunning ? runSpeed : playerSpeed) * Input.GetAxis("Horizontal") : 0;
         float moveDirectionY = playerVelocity.y;
         playerVelocity = (forward * curSpeedX) + (right * curSpeedY);
 
+        if(slopeSlide && Slope() && isSlopeSliding)
+        {
+            playerVelocity += new Vector3(slopePoint.x, -slopePoint.y, slopePoint.z) * slopeSpeed;
+        }
+
 
         //Crouch
         CrouchAndSlide(isRunning);
 
-        //for jump
+        //Jump
         Jump(moveDirectionY);
 
-        //for rotation
+        //Rotation
         Rotate();
     }
 
@@ -145,6 +157,20 @@ public class PlayerMovement : MonoBehaviour
     {
         isSliding = false;
         transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    private bool Slope()
+    {
+        isSlopeSliding = true;
+        if(controller.isGrounded && Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit, 3f))
+        {
+            slopePoint = slopeHit.normal;
+            return Vector3.Angle(slopePoint, Vector3.up ) > controller.slopeLimit;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private static void DisableCursor()
