@@ -522,10 +522,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 4866384431493096681, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.1
-      objectReference: {fileID: 0}
     - target: {fileID: 5111455289066149917, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -564,30 +560,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5111455289066149917, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6501471108034072512, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.04
-      objectReference: {fileID: 0}
-    - target: {fileID: 8165804291526928698, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: slideTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8165804291526928698, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: slideForce
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8165804291526928698, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: maxSlideLength
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 8165804291526928698, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: slideSpeedDecrease
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8165804291526928698, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
-      propertyPath: slideSpeedIncrease
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

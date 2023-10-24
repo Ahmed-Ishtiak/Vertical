@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private bool groundedPlayer; 
     private float gravityValue = -9.81f;
     private bool canMove = true;
-    private Rigidbody rb;
+ 
 
     [SerializeField] private float lookSpeed = 4f;
     private float lookXlimit = 90f;
@@ -33,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         controller = GetComponent<CharacterController>();
         DisableCursor();
     }
@@ -45,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
-        
+
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
@@ -56,50 +55,67 @@ public class PlayerMovement : MonoBehaviour
         float moveDirectionY = playerVelocity.y;
         playerVelocity = (forward * curSpeedX) + (right * curSpeedY);
 
-        
+
         //Crouch
-        bool isCrouching = Input.GetKey(KeyCode.C);
-        bool cancelCrouch = Input.GetKeyUp(KeyCode.C);
-        if (isCrouching && !isRunning) 
-        {
-            transform.localScale = new Vector3(1, 0.6f, 1);
-        }
-        else if(isCrouching && isRunning)
-        {
-            StartSliding();
-            if (isSliding)
-                SlidingMovement();
-        }
-        
-        else
-        {
-            Reset();
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        
+        CrouchAndSlide(isRunning);
+
         //for jump
-        if(Input.GetButton("Jump") && canMove && controller.isGrounded)
-        {
-            playerVelocity.y = jumpHeight; 
-        }
-        else
-        {
-            playerVelocity.y = moveDirectionY;
-        }
-        if(!controller.isGrounded)
-        {
-            playerVelocity.y += gravityValue * Time.deltaTime;
-        }
+        Jump(moveDirectionY);
 
         //for rotation
+        Rotate();
+    }
+
+    private void Rotate()
+    {
         controller.Move(playerVelocity * Time.deltaTime);
-        if(canMove)
+        if (canMove)
         {
             rotation += -Input.GetAxis("Mouse Y") * lookSpeed;
             rotation = Mathf.Clamp(rotation, -lookXlimit, lookXlimit);
             playerCamera.transform.localRotation = Quaternion.Euler(rotation, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
-        }  
+        }
+    }
+
+    private void Jump(float moveDirectionY)
+    {
+        if (Input.GetButton("Jump") && canMove && controller.isGrounded)
+        {
+            playerVelocity.y = jumpHeight;
+        }
+        else
+        {
+            playerVelocity.y = moveDirectionY;
+        }
+        if (!controller.isGrounded)
+        {
+            playerVelocity.y += gravityValue * Time.deltaTime;
+        }
+    }
+
+    private void CrouchAndSlide(bool isRunning)
+    {
+        bool isCrouching = Input.GetKey(KeyCode.C);
+        bool isForward = Input.GetKey(KeyCode.W);
+        bool isBackward = Input.GetKey(KeyCode.S);
+
+        if (isCrouching && !isRunning)
+        {
+            transform.localScale = new Vector3(1, 0.6f, 1);
+        }
+        else if (isCrouching && isRunning && (isForward || isBackward))
+        {
+            StartSliding();
+            if (isSliding)
+                SlidingMovement();
+        }
+
+        else
+        {
+            Reset();
+            transform.localScale = new Vector3(1, 1, 1);
+        }
     }
 
     private void Reset()
@@ -116,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
-        playerVelocity =  (forward * slideForce);
+        playerVelocity =  (forward * slideForce * Input.GetAxisRaw("Vertical"));
         slideTime -= Time.deltaTime;
 
         if (slideTime < 0)
