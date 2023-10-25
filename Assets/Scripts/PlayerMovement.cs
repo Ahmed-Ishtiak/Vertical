@@ -35,7 +35,8 @@ public class PlayerMovement : MonoBehaviour
     private bool slopeSlide = true;
     private float slopeSpeed = 12f;
     private Vector3 slopePoint;
-    private bool isSlopeSliding; 
+    private bool isSlopeSliding;
+    
     
 
     void Start()
@@ -92,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump(float moveDirectionY)
     {
-        if (Input.GetButton("Jump") && canMove && controller.isGrounded)
+        if (Input.GetButton("Jump") && canMove && controller.isGrounded && Slope() == false)
         {
             playerVelocity.y = jumpHeight;
         }
@@ -116,17 +117,41 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(1, 0.6f, 1);
         }
-        else if (isCrouching && isRunning && (isForward || isBackward))
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        if (isCrouching && isRunning && (isForward || isBackward) && !OnSlope())
         {
             StartSliding();
             if (isSliding)
                 SlidingMovement();
         }
-
+        else if(isCrouching && isRunning && (isForward || isBackward) && OnSlope())
+        {
+            StartSliding();
+            if(isSliding)
+            {
+                OnSlopeSliding();
+            }
+        }
+       
         else
         {
-            Reset();
-            transform.localScale = new Vector3(1, 1, 1);
+            Reset();   
+        }
+    }
+
+    private void OnSlopeSliding()
+    {
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
+
+        playerVelocity = (forward.normalized * slideForce * Input.GetAxisRaw("Vertical"));
+
+        if (slideTime < 0)
+        {
+            StopSliding();
         }
     }
 
@@ -144,7 +169,8 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
-        playerVelocity =  (forward * slideForce * Input.GetAxisRaw("Vertical"));
+    
+        playerVelocity = (forward.normalized * slideForce * Input.GetAxisRaw("Vertical"));
         slideTime -= Time.deltaTime;
 
         if (slideTime < 0)
@@ -166,6 +192,20 @@ public class PlayerMovement : MonoBehaviour
         {
             slopePoint = slopeHit.normal;
             return Vector3.Angle(slopePoint, Vector3.up ) > controller.slopeLimit;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool OnSlope()
+    {
+        isSlopeSliding = true;
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit, controller.height * 0.5f + 0.3f))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < controller.slopeLimit && angle != 0;
         }
         else
         {
