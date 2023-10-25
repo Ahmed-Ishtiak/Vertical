@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
@@ -16,10 +18,10 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     //For moving
     private Vector3 playerVelocity = Vector3.zero;
-    private bool groundedPlayer; 
+    private bool groundedPlayer;
     private float gravityValue = -9.81f;
     private bool canMove = true;
- 
+
     //For Rotation
     [SerializeField] private float lookSpeed = 4f;
     private float lookXlimit = 90f;
@@ -36,15 +38,15 @@ public class PlayerMovement : MonoBehaviour
     private float slopeSpeed = 12f;
     private Vector3 slopePoint;
     private bool isSlopeSliding;
-    
-    
+
+
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         DisableCursor();
     }
-  
+
     void Update()
     {
         Movement();
@@ -63,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         float moveDirectionY = playerVelocity.y;
         playerVelocity = (forward * curSpeedX) + (right * curSpeedY);
 
-        if(slopeSlide && Slope() && isSlopeSliding)
+        if (slopeSlide && Slope() && isSlopeSliding)
         {
             playerVelocity += new Vector3(slopePoint.x, -slopePoint.y, slopePoint.z) * slopeSpeed;
         }
@@ -127,18 +129,18 @@ public class PlayerMovement : MonoBehaviour
             if (isSliding)
                 SlidingMovement();
         }
-        else if(isCrouching && isRunning && (isForward || isBackward) && OnSlope())
+        else if (isCrouching && isRunning && (isForward || isBackward) && OnSlope())
         {
             StartSliding();
-            if(isSliding)
+            if (isSliding)
             {
                 OnSlopeSliding();
             }
         }
-       
+
         else
         {
-            Reset();   
+            Reset();
         }
     }
 
@@ -149,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
 
         playerVelocity = (forward.normalized * slideForce * Input.GetAxisRaw("Vertical"));
 
-        if (slideTime < 0)
+        if (slideTime < 0 || -playerVelocity.y < 0)
         {
             StopSliding();
         }
