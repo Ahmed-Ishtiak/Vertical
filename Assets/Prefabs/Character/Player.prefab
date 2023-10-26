@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5111455289066149917}
-  - component: {fileID: 8722775925987205325}
-  - component: {fileID: 8165804291526928698}
+  - component: {fileID: 3018896488757237800}
+  - component: {fileID: 4664453672541398464}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 6501471108034072512}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &8722775925987205325
+--- !u!143 &3018896488757237800
 CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -61,7 +61,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8165804291526928698
+--- !u!114 &4664453672541398464
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,12 +74,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 885338220277951453}
-  playerSpeed: 6
-  jumpHeight: 6
-  runSpeed: 15
+  playerSpeed: 8
+  jumpHeight: 5
+  runSpeed: 14
   lookSpeed: 4
   slideTime: 1
-  slideForce: 12
+  slideForce: 10
 --- !u!1 &357889964761483462
 GameObject:
   m_ObjectHideFlags: 0
