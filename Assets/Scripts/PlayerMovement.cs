@@ -38,7 +38,8 @@ public class PlayerMovement : MonoBehaviour
     private float slopeSpeed = 12f;
     private Vector3 slopePoint;
     private bool isSlopeSliding;
-
+    
+    private float angle;
 
 
     void Start()
@@ -149,8 +150,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
 
         playerVelocity = (forward.normalized * slideForce * Input.GetAxisRaw("Vertical"));
-        
-        if (slideTime < 0 || playerVelocity.y < 0)
+    
+        if (slideTime < 0)
         {
             StopSliding();
         }
@@ -203,9 +204,9 @@ public class PlayerMovement : MonoBehaviour
     private bool OnSlope()
     {
         isSlopeSliding = true;
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit,2f))
+        if (controller.isGrounded && Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit,2f))
         {
-            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < controller.slopeLimit && angle != 0;
         }
         else
