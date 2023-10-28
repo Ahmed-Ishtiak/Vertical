@@ -124,36 +124,16 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
-        if (isCrouching && isRunning && (isForward || isBackward) && OnSlope() == false)
+        if (isCrouching && isRunning && (isForward || isBackward))
         {
             StartSliding();
             if (isSliding)
                 SlidingMovement();
         }
-        else if (isCrouching && isRunning && (isForward || isBackward) && OnSlope() == true)
-        {
-            StartSliding();
-            if (isSliding)
-            {
-                OnSlopeSliding();
-            }
-        }
-
+       
         else
         {
             Reset();
-        }
-    }
-
-    private void OnSlopeSliding()
-    {
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-
-        playerVelocity = (forward.normalized * slideForce * Input.GetAxisRaw("Vertical"));
-    
-        if (slideTime < 0)
-        {
-            StopSliding();
         }
     }
 
@@ -195,20 +175,6 @@ public class PlayerMovement : MonoBehaviour
             return Vector3.Angle(slopePoint, Vector3.up ) > controller.slopeLimit;
         }
 
-        else
-        {
-            return false;
-        }
-    }
-
-    private bool OnSlope()
-    {
-        isSlopeSliding = true;
-        if (controller.isGrounded && Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit,2f))
-        {
-            angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            return angle < controller.slopeLimit && angle != 0;
-        }
         else
         {
             return false;
