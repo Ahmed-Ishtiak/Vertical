@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 playerVelocity = Vector3.zero;
     private bool groundedPlayer;
     private float gravityValue = -9.81f;
+    private bool useGravity;
+    [SerializeField] private float gravityCounterForce = 10f;
     private bool canMove = true;
 
     //For Rotation
@@ -46,6 +48,15 @@ public class PlayerMovement : MonoBehaviour
     private float wallRunMaxTime = 2f;
     private float wallCameraTilt;
     private float maxWallCameraTilt;
+
+    //For Wall Jump
+    [SerializeField] private float wallJumpForce;
+    [SerializeField] private float wallSideJump;
+
+    //For Exit Wall
+    private bool isExitWall;
+    [SerializeField] private float exitWallTime = .2f;
+    private float exitWallMaxTime = .2f;
 
     //DetectWall
     private float wallDistance = .5f;
@@ -87,8 +98,6 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity += new Vector3(slopePoint.x, -slopePoint.y, slopePoint.z) * slopeSpeed;
         }
 
-        //WallRun
-
         //Crouch
         CrouchAndSlide(isRunning);
 
@@ -98,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
         //Rotation
         Rotate();
     }
+    //Wall Run
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         bool isForward = Input.GetKey(KeyCode.W);
@@ -106,11 +116,19 @@ public class PlayerMovement : MonoBehaviour
         {
             StartWallRun();
             if (isWallRunning)
-                WallRunMovement();     
+                WallRunMovement();
+
+            if(Input.GetButton("Jump"))
+            {
+                StartWallJump();
+                if (isExitWall)
+                    WallJump();
+            }
         }
         else
         {
             wallRunTime = wallRunMaxTime;
+            exitWallTime = exitWallMaxTime;
         }
     }
     private void CheckWallRun()
@@ -125,16 +143,21 @@ public class PlayerMovement : MonoBehaviour
     private void StartWallRun()
     {
         isWallRunning = true;
+        playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
     }
     private void WallRunMovement()
     {
-
-        playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
+        useGravity = true;
 
         Vector3 wallNormal = wallLeft ? rightWallHit.normal : leftWallHit.normal;
         Vector3 forward = Vector3.Cross(wallNormal, transform.up);
 
         playerVelocity = (forward * wallRunForce * Input.GetAxisRaw("Vertical"));
+
+        if(useGravity)
+        {
+            playerVelocity = transform.up * gravityCounterForce;
+        }
 
         wallRunTime -= Time.deltaTime;
 
@@ -146,11 +169,37 @@ public class PlayerMovement : MonoBehaviour
     private void StopWallRun()
     {
         isWallRunning = false;
+        isExitWall = true;
     }
-   
+    
+    //Wall Jump
+    private void StartWallJump()
+    {
+        isExitWall = true;
+    }
+    private void WallJump()
+    {
+        Vector3 wallNormal = wallLeft ? rightWallHit.normal : leftWallHit.normal;
+        Vector3 wallForceApply = transform.up * wallJumpForce + wallNormal * wallSideJump;
+
+        playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
+        playerVelocity = wallForceApply;
+
+        exitWallTime -= Time.deltaTime;
+
+        if(exitWallTime < 0)
+        {
+            StopWallJump();
+        }
+    }
+    private void StopWallJump()
+    {
+        isExitWall = true;
+    }
+
     private void Jump(float moveDirectionY)
     {
-        if (Input.GetButton("Jump") && canMove && controller.isGrounded && Slope() == false)
+        if (Input.GetButton("Jump") && canMove && controller.isGrounded && Slope() == false && !isWallRunning)
         {
             playerVelocity.y = jumpHeight;
         }

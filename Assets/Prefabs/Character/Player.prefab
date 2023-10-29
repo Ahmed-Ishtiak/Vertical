@@ -77,11 +77,15 @@ MonoBehaviour:
   playerSpeed: 8
   jumpHeight: 5
   runSpeed: 14
+  gravityCounterForce: 0.5
   lookSpeed: 4
   slideTime: 1
   slideForce: 10
   wallRunForce: 10
   wallRunTime: 1
+  wallJumpForce: 5
+  wallSideJump: 5
+  exitWallTime: 0.2
   Wall:
     serializedVersion: 2
     m_Bits: 64
