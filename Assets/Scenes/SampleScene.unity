@@ -500,7 +500,7 @@ GameObject:
   - component: {fileID: 1571633075}
   m_Layer: 6
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -514,8 +514,8 @@ Transform:
   m_GameObject: {fileID: 1571633073}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.37, y: 7.43, z: 0}
-  m_LocalScale: {x: 1, y: 15, z: 10}
+  m_LocalPosition: {x: -16.39, y: 2.95, z: 0}
+  m_LocalScale: {x: 1, y: 5, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1223785873}
@@ -725,6 +725,26 @@ PrefabInstance:
     - target: {fileID: 9560205639351564, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664453672541398464, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
+      propertyPath: Wall.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664453672541398464, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
+      propertyPath: wallRunTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664453672541398464, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
+      propertyPath: wallRunForce
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664453672541398464, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
+      propertyPath: Ground.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664453672541398464, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
+      propertyPath: wallRunMaxTime
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5111455289066149917, guid: 09d758ec2b3eb6549a3b2d495e1786a8, type: 3}
       propertyPath: m_LocalPosition.x

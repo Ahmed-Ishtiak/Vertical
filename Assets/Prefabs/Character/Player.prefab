@@ -80,6 +80,14 @@ MonoBehaviour:
   lookSpeed: 4
   slideTime: 1
   slideForce: 10
+  wallRunForce: 10
+  wallRunTime: 1
+  Wall:
+    serializedVersion: 2
+    m_Bits: 64
+  Ground:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &357889964761483462
 GameObject:
   m_ObjectHideFlags: 0

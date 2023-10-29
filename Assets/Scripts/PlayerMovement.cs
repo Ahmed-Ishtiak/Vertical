@@ -38,8 +38,23 @@ public class PlayerMovement : MonoBehaviour
     private float slopeSpeed = 12f;
     private Vector3 slopePoint;
     private bool isSlopeSliding;
-    
-    private float angle;
+
+    //For Wall Run
+    private bool isWallRunning;
+    [SerializeField] private float wallRunForce;
+    [SerializeField] private float wallRunTime = 2f;
+    private float wallRunMaxTime = 2f;
+    private float wallCameraTilt;
+    private float maxWallCameraTilt;
+
+    //DetectWall
+    private float wallDistance = .5f;
+    private float minJumpHeight = 1f;
+    [SerializeField] private LayerMask Wall;
+    [SerializeField] private LayerMask Ground;
+    private bool wallLeft;
+    private bool wallRight;
+    RaycastHit rightWallHit, leftWallHit;
 
 
     void Start()
@@ -51,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         Movement();
+        CheckWallRun();
     }
 
     private void Movement()
@@ -71,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity += new Vector3(slopePoint.x, -slopePoint.y, slopePoint.z) * slopeSpeed;
         }
 
+        //WallRun
 
         //Crouch
         CrouchAndSlide(isRunning);
@@ -81,19 +98,56 @@ public class PlayerMovement : MonoBehaviour
         //Rotation
         Rotate();
     }
-
-    private void Rotate()
+    void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        controller.Move(playerVelocity * Time.deltaTime);
-        if (canMove)
+        bool isForward = Input.GetKey(KeyCode.W);
+
+        if (hit.gameObject.tag == ("Wall") && isForward && AboveGround())
         {
-            rotation += -Input.GetAxis("Mouse Y") * lookSpeed;
-            rotation = Mathf.Clamp(rotation, -lookXlimit, lookXlimit);
-            playerCamera.transform.localRotation = Quaternion.Euler(rotation, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+            StartWallRun();
+            if (isWallRunning)
+                WallRunMovement();     
+        }
+        else
+        {
+            wallRunTime = wallRunMaxTime;
         }
     }
+    private void CheckWallRun()
+    {
+        wallRight = Physics.Raycast(transform.position, Vector3.right, out rightWallHit, wallDistance, Wall);
+        wallLeft = Physics.Raycast(transform.position, Vector3.left, out leftWallHit, wallDistance, Wall);
+    }
+    private bool AboveGround()
+    {
+        return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, Ground);
+    }
+    private void StartWallRun()
+    {
+        isWallRunning = true;
+    }
+    private void WallRunMovement()
+    {
 
+        playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
+
+        Vector3 wallNormal = wallLeft ? rightWallHit.normal : leftWallHit.normal;
+        Vector3 forward = Vector3.Cross(wallNormal, transform.up);
+
+        playerVelocity = (forward * wallRunForce * Input.GetAxisRaw("Vertical"));
+
+        wallRunTime -= Time.deltaTime;
+
+        if (wallRunTime < 0)
+        {
+            StopWallRun();
+        }
+    }
+    private void StopWallRun()
+    {
+        isWallRunning = false;
+    }
+   
     private void Jump(float moveDirectionY)
     {
         if (Input.GetButton("Jump") && canMove && controller.isGrounded && Slope() == false)
@@ -109,7 +163,7 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity.y += gravityValue * Time.deltaTime;
         }
     }
-
+    
     private void CrouchAndSlide(bool isRunning)
     {
         bool isCrouching = Input.GetKey(KeyCode.C);
@@ -178,6 +232,17 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             return false;
+        }
+    }
+    private void Rotate()
+    {
+        controller.Move(playerVelocity * Time.deltaTime);
+        if (canMove)
+        {
+            rotation += -Input.GetAxis("Mouse Y") * lookSpeed;
+            rotation = Mathf.Clamp(rotation, -lookXlimit, lookXlimit);
+            playerCamera.transform.localRotation = Quaternion.Euler(rotation, 0, 0);
+            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
         }
     }
 
