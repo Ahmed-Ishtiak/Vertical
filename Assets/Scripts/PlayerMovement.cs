@@ -11,12 +11,17 @@ using UnityEngine.Animations;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Camera")]
     public Camera playerCamera;
+    [SerializeField] private float camTilt = 25f;
+    [SerializeField] private float camTiltTime = 25f;
+     private float tilt;
+    [Header("Movement")]
     [SerializeField] private float playerSpeed = 2.0f;
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float runSpeed = 8f;
     private CharacterController controller;
-    //For moving
+   
     private Vector3 playerVelocity = Vector3.zero;
     private bool groundedPlayer;
     private float gravityValue = -9.81f;
@@ -24,12 +29,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravityCounterForce = 10f;
     private bool canMove = true;
 
-    //For Rotation
+    
     [SerializeField] private float lookSpeed = 4f;
     private float lookXlimit = 90f;
     private float rotation = 0;
 
-    //For Sliding
+    [Header("Sliding")]
     private bool isSliding;
     [SerializeField] private float slideTime = 1f;
     private float maxSlideTime = 1f;
@@ -41,19 +46,17 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 slopePoint;
     private bool isSlopeSliding;
 
-    //For Wall Run
+    [Header("Wall Run")]
     private bool isWallRunning;
     [SerializeField] private float wallRunForce;
     [SerializeField] private float wallRunTime = 2f;
     private float wallRunMaxTime = 2f;
-    private float wallCameraTilt;
-    private float maxWallCameraTilt;
 
-    //For Wall Jump
+    [Header("Wall Jump")]
     [SerializeField] private float wallJumpForce;
     [SerializeField] private float wallSideJump;
 
-    //For Exit Wall
+    [Header("Exit Wall Jump")]
     private bool isExitWall;
     [SerializeField] private float exitWallTime = .2f;
     private float exitWallMaxTime = .2f;
@@ -75,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Update()
-    {
+    {        
         Movement();
         CheckWallRun();
     }
@@ -107,16 +110,21 @@ public class PlayerMovement : MonoBehaviour
         //Rotation
         Rotate();
     }
+    
     //Wall Run
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         bool isForward = Input.GetKey(KeyCode.W);
+        bool isRun = Input.GetKey(KeyCode.LeftShift);
 
-        if (hit.gameObject.tag == ("Wall") && isForward && AboveGround())
+        if (hit.gameObject.tag == ("Wall") && isForward && AboveGround() && !isRun)
         {
             StartWallRun();
             if (isWallRunning)
+            {
                 WallRunMovement();
+            }
+               
 
             if(Input.GetButton("Jump"))
             {
@@ -131,10 +139,20 @@ public class PlayerMovement : MonoBehaviour
             exitWallTime = exitWallMaxTime;
         }
     }
+
     private void CheckWallRun()
     {
         wallRight = Physics.Raycast(transform.position, Vector3.right, out rightWallHit, wallDistance, Wall);
         wallLeft = Physics.Raycast(transform.position, Vector3.left, out leftWallHit, wallDistance, Wall);
+
+        if((wallLeft || wallRight) && !isWallRunning)
+        {
+            WallRunMovement();
+        }
+        if((!wallLeft || !wallRight) && isWallRunning)
+        {
+            StopWallRun();
+        }
     }
     private bool AboveGround()
     {
@@ -144,6 +162,15 @@ public class PlayerMovement : MonoBehaviour
     {
         isWallRunning = true;
         playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
+
+        if(wallLeft)
+        {
+            tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
+        }
+        else if(wallRight)
+        {
+            tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        }
     }
     private void WallRunMovement()
     {
@@ -154,14 +181,17 @@ public class PlayerMovement : MonoBehaviour
 
         playerVelocity = (forward * wallRunForce * Input.GetAxisRaw("Vertical"));
 
-        if(useGravity)
+        if (useGravity)
         {
             playerVelocity = transform.up * gravityCounterForce;
         }
-
+        else
+        {
+            playerVelocity = transform.up * gravityValue;
+        }
         wallRunTime -= Time.deltaTime;
 
-        if (wallRunTime < 0)
+        if (wallRunTime <= 0)
         {
             StopWallRun();
         }
@@ -170,6 +200,8 @@ public class PlayerMovement : MonoBehaviour
     {
         isWallRunning = false;
         isExitWall = true;
+        useGravity = false;
+        tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
     }
     
     //Wall Jump
@@ -180,11 +212,11 @@ public class PlayerMovement : MonoBehaviour
     private void WallJump()
     {
         Vector3 wallNormal = wallLeft ? rightWallHit.normal : leftWallHit.normal;
-        Vector3 wallForceApply = transform.up * wallJumpForce + wallNormal * wallSideJump;
+        Vector3 wallForceApply = transform.up * wallJumpForce + wallNormal * wallSideJump;  
 
         playerVelocity = new Vector3(playerVelocity.x, 0f, playerVelocity.z);
         playerVelocity = wallForceApply;
-
+    
         exitWallTime -= Time.deltaTime;
 
         if(exitWallTime < 0)
