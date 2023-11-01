@@ -9,11 +9,14 @@ public class RigidbodyMovement : MonoBehaviour
     private Rigidbody rb;
     Vector3 moveDirection;
     Vector3 slopeDirection;
+    [SerializeField] Transform orientation;
 
     [Header("Movement")]
     private float playerHeight = 2f;
     public float playerSpeed = 6f;
     public float movementMultiplier = 10f;
+    public float wallRunSpeed;
+
     [SerializeField] float airMultiplier = 0.4f;
     private float verticalInput;
     private float horizontalInput;
@@ -36,13 +39,12 @@ public class RigidbodyMovement : MonoBehaviour
 
     [Header("Sliding")]
     private bool isSliding;
-    [SerializeField] private float slideTime = 1f;
-    private float maxSlideTime = 1f;
+    private float slideTime = 1f;
+    [SerializeField] private float maxSlideTime = 1.3f;
     [SerializeField] private float slideForce;
 
     [Header("Jump")]
     public float jumpForce = 5f;
-
 
     [Header("KeyBind")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
@@ -50,6 +52,9 @@ public class RigidbodyMovement : MonoBehaviour
     [SerializeField] KeyCode crouchKey = KeyCode.C;
 
     RaycastHit slopeHit;
+
+    public bool isWallRun;
+    private float maxSlope = 45f;
 
     void Start()
     {
@@ -66,7 +71,11 @@ public class RigidbodyMovement : MonoBehaviour
         ControlDrag();
         ControlRun();
         Crouch();
-        Jump();
+        if(Input.GetKey(jumpKey) && isGrounded && !OnSlope())
+        {
+            Jump();
+        }
+       
         Sliding();
         slopeDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
     }
@@ -79,7 +88,7 @@ public class RigidbodyMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
         horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        moveDirection = (transform.forward * verticalInput + transform.right * horizontalInput);
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
     }
 
     private void MoveDirection()
@@ -98,6 +107,14 @@ public class RigidbodyMovement : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * playerSpeed * airMultiplier, ForceMode.Acceleration);
             
+        }
+        else if(isWallRun)
+        {
+            playerSpeed = wallRunSpeed;
+        }
+        if(!isWallRun)
+        {
+            rb.useGravity = !OnSlope();
         }
     }
     
@@ -142,10 +159,18 @@ public class RigidbodyMovement : MonoBehaviour
 
     private void SlidingMovement()
     {
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-
-        moveDirection = (forward.normalized * slideForce);
-        slideTime -= Time.deltaTime;
+       
+        Vector3 inputDirection = orientation.forward * verticalInput;
+        
+        if(!OnSlope() || rb.velocity.y > -0.1f)
+        {
+            rb.AddForce(inputDirection.normalized * slideForce, ForceMode.Force);
+            slideTime -= Time.deltaTime;
+        }
+        else
+        {
+            rb.AddForce(GetSlopeDirection(inputDirection) * slideForce, ForceMode.Force);
+        }
 
         if (slideTime < 0)
         {
@@ -160,12 +185,9 @@ public class RigidbodyMovement : MonoBehaviour
     }
 
     private void Jump()
-    {
-        if(Input.GetKey(jumpKey) && isGrounded)
-        {
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        }
-        
+    { 
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     private void ControlRun()
@@ -192,17 +214,15 @@ public class RigidbodyMovement : MonoBehaviour
     }
     private bool OnSlope()
     {
-        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight/2 + 0.5f ))
+        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f))
         {
-            if(slopeHit.normal != Vector3.up)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlope && angle != 0;
         }
         return false;
+    }
+    public Vector3 GetSlopeDirection(Vector3 direction)
+    {
+        return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
     }
 }

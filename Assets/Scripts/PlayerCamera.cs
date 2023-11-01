@@ -6,8 +6,9 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
-
-    Camera cam;
+    [SerializeField] WallRun wallRun;
+    [SerializeField] Transform cam;
+    [SerializeField] Transform orientation;
 
     [SerializeField] private float xSen;
     [SerializeField] private float ySen;
@@ -19,7 +20,6 @@ public class PlayerCamera : MonoBehaviour
 
     void Start()
     {
-        cam = GetComponentInChildren<Camera>();
         DisableCursor();
     }
 
@@ -27,8 +27,8 @@ public class PlayerCamera : MonoBehaviour
     {
         MInput();
 
-        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        cam.transform.localRotation = Quaternion.Euler(xRotation, yRotation, wallRun.tilt);
+        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 
     private void MInput()
