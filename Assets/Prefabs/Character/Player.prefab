@@ -167,6 +167,9 @@ MonoBehaviour:
   vaultSpeed: 4
   vaultTime: 0.9
   vaultMaxTime: 0.9
+  vaultJumpForce: 8
+  vaultJumpSideForce: 12
+  exitVaultMaxTime: 0.2
   wallMask:
     serializedVersion: 2
     m_Bits: 128

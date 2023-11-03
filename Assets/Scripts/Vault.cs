@@ -15,6 +15,15 @@ public class Vault : MonoBehaviour
     [SerializeField] float vaultTime = 0.5f;
     [SerializeField] float vaultMaxTime = 0.5f;
 
+    [Header("Vault Jump")]
+    public float vaultJumpForce;
+    public float vaultJumpSideForce;
+
+    [Header("Exit Vault")]
+    private bool exitVault;
+    private float exitVaultTime;
+    public float exitVaultMaxTime;
+
     [Header("Detection")]
     [SerializeField] LayerMask wallMask;
     public float sphereCastRadius;
@@ -57,7 +66,7 @@ public class Vault : MonoBehaviour
 
     private void StateMachine()
     {
-        if (wallFront && (vaultAngle < vaultMaxAngle) && Input.GetKey(KeyCode.W)) 
+        if (wallFront && (vaultAngle < vaultMaxAngle) && Input.GetKey(KeyCode.W) && !exitVault) 
         {
             if(!isVaulting && vaultTime > 0)
             {
@@ -69,9 +78,31 @@ public class Vault : MonoBehaviour
             }
             if(vaultTime <= 0)
             {
+                exitVault = true;
+                exitVaultTime = exitVaultMaxTime;
                 StopVault();
             }
+            if(Input.GetKey(KeyCode.Space))
+            {
+                VaultJump();
+            }
         }
+        else if(exitVault)
+        {
+            if(rbMovement.isVaulting)
+            {
+                StopVault();
+            }
+            if(exitVaultTime > 0)
+            {
+                exitVaultTime -= Time.deltaTime; 
+            }
+            if(exitVaultTime <=0)
+            {
+                exitVault = false;
+            }
+        }
+
         else
         {
             if(isVaulting)
@@ -95,5 +126,19 @@ public class Vault : MonoBehaviour
         isVaulting = false;
         rbMovement.isVaulting = false;
     }
+
+
+    private void VaultJump()
+    {
+        exitVault = true;
+        exitVaultTime = exitVaultMaxTime;
+
+        Vector3 vaultNormal = wallFront ? wallHit.normal : wallHit.normal;
+        Vector3 vaultForceApply = transform.up * vaultJumpForce + vaultNormal * vaultJumpSideForce;
+
+        rb.velocity = new Vector3(rb.velocity.x,0f , rb.velocity.z);
+        rb.AddForce(vaultForceApply, ForceMode.Impulse);
+    }
+
     
 }
