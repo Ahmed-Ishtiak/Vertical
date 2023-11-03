@@ -82,7 +82,7 @@ MonoBehaviour:
   playerSpeed: 6
   movementMultiplier: 7
   wallRunSpeed: 8
-  vaultSpeed: 0
+  vaultSpeed: 8
   airMultiplier: 0.4
   groundMask:
     serializedVersion: 2
@@ -136,7 +136,7 @@ MonoBehaviour:
   maxWallRunTime: 2
   wallJumpUpForce: 8
   wallJumpSideForce: 14
-  maxExitWallTime: 0.2
+  maxExitWallTime: 0.35
   groundMask:
     serializedVersion: 2
     m_Bits: 128
@@ -169,7 +169,7 @@ MonoBehaviour:
   vaultMaxTime: 0.9
   vaultJumpForce: 8
   vaultJumpSideForce: 12
-  exitVaultMaxTime: 0.2
+  exitVaultMaxTime: 0.35
   wallMask:
     serializedVersion: 2
     m_Bits: 128
