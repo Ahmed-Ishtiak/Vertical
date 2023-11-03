@@ -16,13 +16,14 @@ public class RigidbodyMovement : MonoBehaviour
     public float playerSpeed = 6f;
     public float movementMultiplier = 10f;
     public float wallRunSpeed;
+    public float vaultSpeed;
 
     [SerializeField] float airMultiplier = 0.4f;
     private float verticalInput;
     private float horizontalInput;
     [Header("Ground Dectection")]
     [SerializeField] LayerMask groundMask;
-    bool isGrounded;
+    public bool isGrounded;
     private float groundDistance = 0.4f;
 
     [Header("Drag")]
@@ -54,6 +55,7 @@ public class RigidbodyMovement : MonoBehaviour
     RaycastHit slopeHit;
 
     public bool isWallRun;
+    public bool isVaulting;
     private float maxSlope = 45f;
 
     void Start()
@@ -111,6 +113,10 @@ public class RigidbodyMovement : MonoBehaviour
         else if(isWallRun)
         {
             playerSpeed = wallRunSpeed;
+        }
+        else if(isVaulting)
+        {
+            playerSpeed = vaultSpeed;
         }
         if(!isWallRun)
         {

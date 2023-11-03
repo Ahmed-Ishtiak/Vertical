@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8797153224839552376}
   - component: {fileID: 764339924028761694}
   - component: {fileID: 191520521613497298}
+  - component: {fileID: 7490105143544121475}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -81,21 +82,24 @@ MonoBehaviour:
   playerSpeed: 6
   movementMultiplier: 7
   wallRunSpeed: 8
+  vaultSpeed: 0
   airMultiplier: 0.4
   groundMask:
     serializedVersion: 2
     m_Bits: 128
+  isGrounded: 0
   walkSpeed: 8
   runSpeed: 14
   acceleration: 10
   crouchSpeed: 6
   maxSlideTime: 1.2
   slideForce: 3
-  jumpForce: 1
+  jumpForce: 1.5
   jumpKey: 32
   runKey: 304
   crouchKey: 99
   isWallRun: 0
+  isVaulting: 0
 --- !u!114 &764339924028761694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: {fileID: 3852613747507280100}
-  minJumpHeight: 1.5
+  minJumpHeight: 1.7
   wallRunForce: 20
   wallRunTime: 2
   maxWallRunTime: 2
@@ -147,6 +151,27 @@ MonoBehaviour:
   wallRunFovTime: 20
   camTilt: 25
   camTiltTime: 25
+--- !u!114 &7490105143544121475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930461462497790524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c15f227f46643e4eb0037f8ff190c8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 3852613747507280100}
+  vaultSpeed: 4
+  vaultTime: 0.9
+  vaultMaxTime: 0.9
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
+  sphereCastRadius: 0.25
+  sphereLength: 0.7
 --- !u!1 &3387306366028508212
 GameObject:
   m_ObjectHideFlags: 0
