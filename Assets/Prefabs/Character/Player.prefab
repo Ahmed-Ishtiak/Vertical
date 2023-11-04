@@ -149,8 +149,8 @@ MonoBehaviour:
   fov: 90
   wallRunFov: 110
   wallRunFovTime: 20
-  camTilt: 25
-  camTiltTime: 25
+  camTilt: 20
+  camTiltTime: 20
 --- !u!114 &7490105143544121475
 MonoBehaviour:
   m_ObjectHideFlags: 0

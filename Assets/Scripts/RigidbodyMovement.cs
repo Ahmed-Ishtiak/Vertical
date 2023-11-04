@@ -95,6 +95,7 @@ public class RigidbodyMovement : MonoBehaviour
 
     private void MoveDirection()
     {
+
         if(isGrounded && !OnSlope())
         {
             rb.AddForce(moveDirection.normalized * playerSpeed * movementMultiplier, ForceMode.Acceleration);

@@ -125,14 +125,6 @@ public class WallRun : MonoBehaviour
 
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, wallRunFov, wallRunFovTime * Time.deltaTime);
 
-        if(wallLeft)
-        {
-            tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
-        }
-        else if(wallRight)
-        {
-            tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
-        }
     }
     private void WallRunMovement()
     {
@@ -140,9 +132,18 @@ public class WallRun : MonoBehaviour
        
         Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
         Vector3 forward = Vector3.Cross(wallNormal, transform.up);
- 
-        
-        if((orientation.forward - forward).magnitude > (orientation.forward - -forward).magnitude)
+
+
+        if (wallLeft)
+        {
+            tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
+        }
+        else if (wallRight)
+        {
+            tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        }
+
+        if ((orientation.forward - forward).magnitude > (orientation.forward - -forward).magnitude)
         {
             forward = -forward;
         }
@@ -158,7 +159,7 @@ public class WallRun : MonoBehaviour
         rbMovement.isWallRun = false;
 
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, fov, wallRunFovTime * Time.deltaTime);
-        tilt = Mathf.Lerp(tilt, 0f, camTiltTime * Time.deltaTime);
+        tilt = Mathf.Lerp(0f, 0f, camTiltTime * Time.deltaTime);
     }
 
     private void WallJump()
